@@ -16,11 +16,10 @@ if st.button("Send") and api_key and prompt:
         # Configure Gemini
         genai.configure(api_key=api_key)
 
-        # Load Gemini model
-        model = genai.GenerativeModel("gemini-pro")
-
-        # Send the user prompt
+        model = genai.GenerativeModel('models/gemini-pro')
+        
         response = model.generate_content(prompt)
+
 
         # Display the response
         st.success("🤖 Bot: " + response.text)

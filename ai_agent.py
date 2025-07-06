@@ -1,28 +1,27 @@
-import streamlit as st
+import os
 import google.generativeai as genai
+from dotenv import load_dotenv
+import streamlit as st
 
-# UI setup
-st.set_page_config(page_title="Customer Support Chatbot", page_icon="💬")
-st.title("💬 Gemini Customer Service Bot")
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
 
-# Ask for Gemini API key
-api_key = st.text_input("Enter your Gemini API Key:", type="password")
+# Configure Gemini
+genai.configure(api_key=api_key)
 
-# Get user prompt
-prompt = st.text_area("What would you like to ask?", height=150)
+# Load the correct model
+model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
 
-if st.button("Send") and api_key and prompt:
-    try:
-        # Configure Gemini
-        genai.configure(api_key=api_key)
+# Streamlit UI
+st.set_page_config(page_title="Gemini AI Agent")
+st.title("🤖 Gemini Customer Service Agent")
 
-        model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
-        
-        response = model.generate_content(prompt)
-
-
-        # Display the response
-        st.success("🤖 Bot: " + response.text)
-
-    except Exception as e:
-        st.error(f"❌ Error: {e}")
+user_input = st.text_input("Ask a question:")
+if user_input:
+    with st.spinner("Thinking..."):
+        try:
+            response = model.generate_content(user_input)
+            st.success(response.text)
+        except Exception as e:
+            st.error(f"Error: {e}")
